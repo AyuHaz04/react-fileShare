@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { Container, Card, Button, Form, ListGroup, Alert } from "react-bootstrap";
 import { AuthContext } from "../context/AuthCont";
 import axios from "axios";
-import "../styles/Profile.css"; // 👈 Import custom CSS
+import { API } from "../utils/api"; // ✅ import API
+import "../styles/Profile.css";
 
 const Profile = () => {
   const { user, isLoggedIn, logout } = useContext(AuthContext);
@@ -30,7 +31,7 @@ const Profile = () => {
     formData.append("email", user.email);
 
     try {
-      await axios.post("http://localhost:5000/upload", formData);
+      await axios.post(`${API}/upload`, formData); // ✅ using API
       handleAlert("success", "File uploaded successfully");
       fetchDocuments();
     } catch (err) {
@@ -42,9 +43,7 @@ const Profile = () => {
   const fetchDocuments = useCallback(async () => {
     if (!user?.email) return;
     try {
-      const res = await axios.get(
-        `http://localhost:5000/upload/documents?email=${user.email}`
-      );
+      const res = await axios.get(`${API}/upload/documents?email=${user.email}`); // ✅
       setUploadedDocs(res.data);
     } catch (err) {
       console.error("Fetch error:", err);
@@ -60,10 +59,7 @@ const Profile = () => {
     if (!targetEmail) return handleAlert("warning", "Enter an email to share with");
 
     try {
-      await axios.post("http://localhost:5000/upload/share", {
-        docId,
-        targetEmail,
-      });
+      await axios.post(`${API}/upload/share`, { docId, targetEmail }); // ✅
       handleAlert("success", "Document shared!");
     } catch (err) {
       console.error("Share error:", err);
@@ -73,7 +69,7 @@ const Profile = () => {
 
   const deleteDocument = async (docId) => {
     try {
-      await axios.delete(`http://localhost:5000/upload/${docId}`, {
+      await axios.delete(`${API}/upload/${docId}`, {
         data: { email: user.email }
       });
       handleAlert("info", "Document removed from your list");
@@ -146,7 +142,7 @@ const Profile = () => {
                     <div className="d-flex justify-content-between align-items-center">
                       <a
                         className="file-link"
-                        href={`http://localhost:5000/${doc.path}`}
+                        href={`${API}/${doc.path}`} // ✅ API-based file link
                         target="_blank"
                         rel="noreferrer"
                       >

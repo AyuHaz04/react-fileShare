@@ -3,6 +3,7 @@ import '../styles/Auth.css';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthCont';
 import AuthAlert from '../components/AuthAlert';
+import { API } from '../utils/api';
 
 function Login() {
   const navigate = useNavigate();
@@ -21,16 +22,14 @@ function Login() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-
     try {
-      const res = await fetch('http://localhost:5000/api/users/login', {
+      const res = await fetch(`${API}/api/users/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
       });
 
       const result = await res.json();
-
       if (res.ok && result.user) {
         login(result.user);
         showAlert('success', result.message || 'Login successful');

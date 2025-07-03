@@ -1,9 +1,9 @@
-// src/pages/Register.js
 import React, { useState, useContext } from 'react';
 import '../styles/Auth.css';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthCont';
-import AuthAlert from '../components/AuthAlert'; // make sure this file exists
+import AuthAlert from '../components/AuthAlert';
+import { API } from '../utils/api';
 
 function Register() {
   const navigate = useNavigate();
@@ -33,7 +33,7 @@ function Register() {
     if (!formData.email) return showAlert('warning', 'Please enter email first');
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:5000/api/otp/send', {
+      const res = await fetch(`${API}/api/otp/send`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: formData.email })
@@ -56,7 +56,7 @@ function Register() {
   const handleVerifyOtp = async () => {
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:5000/api/otp/verify', {
+      const res = await fetch(`${API}/api/otp/verify`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: formData.email, otp })
@@ -82,7 +82,7 @@ function Register() {
 
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:5000/api/users/register', {
+      const res = await fetch(`${API}/api/users/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
@@ -108,80 +108,33 @@ function Register() {
     <div className="auth-container">
       <form className="auth-form" onSubmit={handleRegister}>
         <h2>Create an Account</h2>
-
-        {/* Alert Component */}
         <AuthAlert {...alert} />
-
         <label>Username</label>
-        <input
-          type="text"
-          name="username"
-          value={formData.username}
-          onChange={handleChange}
-          required
-        />
-
+        <input type="text" name="username" value={formData.username} onChange={handleChange} required />
         <label>Email</label>
-        <input
-          type="email"
-          name="email"
-          value={formData.email}
-          onChange={handleChange}
-          required
-        />
-
-        <button
-          type="button"
-          className="auth-button"
-          onClick={handleSendOtp}
-          disabled={otpSent || loading}
-        >
+        <input type="email" name="email" value={formData.email} onChange={handleChange} required />
+        <button type="button" className="auth-button" onClick={handleSendOtp} disabled={otpSent || loading}>
           {loading ? 'Sending OTP...' : 'Send OTP'}
         </button>
-
         {otpSent && !otpVerified && (
           <>
             <label>Enter OTP</label>
-            <input
-              type="text"
-              value={otp}
-              onChange={(e) => setOtp(e.target.value)}
-              required
-            />
-            <button
-              type="button"
-              className="auth-button"
-              onClick={handleVerifyOtp}
-              disabled={loading}
-            >
+            <input type="text" value={otp} onChange={(e) => setOtp(e.target.value)} required />
+            <button type="button" className="auth-button" onClick={handleVerifyOtp} disabled={loading}>
               {loading ? 'Verifying...' : 'Verify OTP'}
             </button>
           </>
         )}
-
         {otpVerified && (
           <>
             <label>Password</label>
-            <input
-              type="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              required
-            />
-            <button
-              type="submit"
-              className="auth-button"
-              disabled={loading}
-            >
+            <input type="password" name="password" value={formData.password} onChange={handleChange} required />
+            <button type="submit" className="auth-button" disabled={loading}>
               {loading ? 'Registering...' : 'Register'}
             </button>
           </>
         )}
-
-        <p className="switch-link">
-          Already have an account? <Link to="/login">Login</Link>
-        </p>
+        <p className="switch-link">Already have an account? <Link to="/login">Login</Link></p>
       </form>
     </div>
   );
